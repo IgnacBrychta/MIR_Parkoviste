@@ -1,0 +1,12 @@
+<Variables>
+	<Item Name="TLACITKOPRIJEZD" Pos="03000469" Type="0" />
+	<Item Name="TLACITKOVYJEZD" Pos="03000469" Type="1" />
+	<Item Name="TLACITKOZAPLACENO" Pos="030004BB" Type="0" />
+	<Item Name="prijezdSpz" Pos="030003C7" Type="48" />
+	<Item Name="vyjezdSpz" Pos="03000418" Type="48" />
+	<Item Name="zavoraPrijezdSpustena" Pos="030003C6" Type="0" />
+	<Item Name="zavoraVyjezdSpustena" Pos="030003C6" Type="1" />
+	<Item Name="castkaNaZaplaceniText" Pos="0300046A" Type="48" />
+	<Item Name="dobaStaniText" Pos="030004BC" Type="48" />
+	<Item Name="statusText" Pos="0300050D" Type="48" />
+</Variables>

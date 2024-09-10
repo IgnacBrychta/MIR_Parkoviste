@@ -1,0 +1,159 @@
+#srcfile 'C:\USERS\IGN·C\DOCUMENTS\PLC\WINTER_PLC\10_PARKOVACIDUM\SYSGEN\HWCONFIG.ST'
+
+; Global variables
+#def  CPU_TYPE 76
+#def  CPU_CODE 1013
+
+; Global types
+#struct  TAIStat
+  bool UNF,
+  bool UNR,
+  bool OVR,
+  bool OVF,
+  bool FLS,
+  bool CJC,
+  bool dummy6,
+  bool dummy7,
+  bool CHC,
+  bool dummy9,
+  bool dummy10,
+  bool dummy11,
+  bool dummy12,
+  bool dummy13,
+  bool dummy14,
+  bool dummy15
+#struct  TAI
+  TAIStat STAT,
+  int FS,
+  real ENG,
+  real PCT
+#struct  TCHMC_IN
+  byte MCSTAT,
+  usint MCERR,
+  udint MCPOS,
+  udint MCVEL
+#struct  TCHMC_OUT
+  byte MCCONT,
+  usint MCCOMM,
+  udint MCPAR1,
+  udint MCPAR2
+#struct  TAO_TC6
+  int FS,
+  real ENG,
+  real PCT
+#struct  TBIN_16DIP
+  bool dummy0,
+  bool dummy1,
+  bool dummy2,
+  bool dummy3,
+  bool dummy4,
+  bool dummy5,
+  bool dummy6,
+  bool dummy7,
+  bool DIP8,
+  bool DIP9,
+  bool DIP10,
+  bool DIP11,
+  bool DIP12,
+  bool DIP13,
+  bool DIP14,
+  bool DIP15
+#struct  TBIN_16DI
+  bool DI0,
+  bool DI1,
+  bool DI2,
+  bool DI3,
+  bool DI4,
+  bool DI5,
+  bool DI6,
+  bool DI7,
+  bool DI8,
+  bool DI9,
+  bool DI10,
+  bool DI11,
+  bool DI12,
+  bool DI13,
+  bool DI14,
+  bool DI15
+#struct  TCNTF_IN
+  uint SCNT,
+  udint VALA,
+  udint VALB
+#struct  TCNTF2_OUT
+  uint CCNT,
+  udint SET,
+  udint SETB
+#struct  TPWM
+  int FS,
+  real PCT
+#struct  TBIN_12DOIR
+  bool DO0,
+  bool DO1,
+  bool DO2,
+  bool DO3,
+  bool DO4,
+  bool DO5,
+  bool DO6,
+  bool DO7,
+  bool DO8,
+  bool DO9,
+  bool DO10,
+  bool DO11,
+  bool dummy12,
+  bool dummy13,
+  bool ENA,
+  bool ENB
+#struct  TCHStatistic
+  usint STAT,
+  usint ERR,
+  udint trueMes,
+  udint falseMes
+#struct  TETHStatistic_BACnet
+  usint STAT,
+  usint ERR,
+  udint trueMes,
+  udint falseMes
+#struct  TCHControl
+  uint CONTROL
+
+; Global variables
+#def  r0_p0_Statistic_CH1 TCHStatistic %X7500
+#def  r0_p0_Control_CH1 TCHControl %Y7500
+
+; Global variables
+#reg  usint OI1074_Keyb
+#reg  usint OI1074_VideoRam[80]
+
+; Global variables
+#def  r0_p3_DI TBIN_16DI %X20
+#def  r0_p3_DIP TBIN_16DIP %X22
+#def  r0_p3_CNT_IN1 TCNTF_IN %X24
+#def  r0_p3_CNT_IN2 TCNTF_IN %X34
+#def  r0_p3_AI0 TAI %X44
+#def  r0_p3_AI1 TAI %X56
+#def  r0_p3_AI2 TAI %X68
+#def  r0_p3_AI3 TAI %X80
+#def  r0_p3_AI4 TAI %X92
+#def  r0_p3_AI5 TAI %X104
+#def  r0_p3_AI6 TAI %X116
+#def  r0_p3_AI7 TAI %X128
+#def  r0_p3_DO TBIN_12DOIR %Y4
+#def  r0_p3_CNT_OUT1 TCNTF2_OUT %Y6
+#def  r0_p3_CNT_OUT2 TCNTF2_OUT %Y16
+#def  r0_p3_AO0 TAO_TC6 %Y26
+#def  r0_p3_AO1 TAO_TC6 %Y36
+#def  r0_p3_AO2 TAO_TC6 %Y46
+#def  r0_p3_AO3 TAO_TC6 %Y56
+#def  r0_p3_PWM8 TPWM %Y66
+#def  r0_p3_PWM9 TPWM %Y72
+#def  r0_p3_PWM10 TPWM %Y78
+#def  r0_p3_PWM11 TPWM %Y84
+
+; Global variables
+ 
+#srcfile 'C:\USERS\IGN·C\DOCUMENTS\PLC\WINTER_PLC\10_PARKOVACIDUM\SYSGEN\HWCONFIG.ST'
+
+
+ 
+
+#srcfile ''

@@ -1,0 +1,50 @@
+
+
+FUNCTION NajitPrazdnyIndex : INT
+(**)
+  VAR
+    index : INT; (* Comment *)
+  END_VAR
+END_FUNCTION 
+
+
+(**)
+END_
+
+FUNCTION SpocitatParkovaciPoplatek : Nic
+(**)
+  VAR_INPUT
+    indexVozidla : INT; (* Comment *)
+  END_VAR
+  VAR
+    casZaparkovano : INT; (* Comment *)
+    cenaZaparkovani : INT;
+  END_VAR
+END_FUNCTION 
+
+FUNCTION ZiskatIndexVozidlaPodleSpz : INT
+(**)
+  VAR
+    index : INT; (* Comment *)
+  END_VAR
+  VAR_INPUT
+    SPZ : STRING; (* Comment *)
+  END_VAR
+END_FUNCTION 
+
+FUNCTION ZkusitPridatVozidlo : BOOL
+(**)
+  VAR
+    nalezenyIndex : INT; (* Comment *)
+  END_VAR
+END_FUNCTION 
+
+FUNCTION ZobrazitUdajePriVyjezdu : Nic
+(**)
+  VAR_INPUT
+    indexVozidla : INT; (* Comment *)
+  END_VAR
+END_FUNCTION 
+
+
+

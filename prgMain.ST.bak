@@ -1,0 +1,174 @@
+FUNCTION NastavitProgram : Nic
+  
+  nastaveno := TRUE;
+END_FUNCTION
+
+FUNCTION NajitPrazdnyIndex : INT
+  VAR
+    index : INT; (* Comment *)
+  END_VAR
+  NajitPrazdnyIndex := vychoziHodnotaInt;
+  FOR index := 0 TO pocetParkovacichMist - 1 DO
+    IF vozidla[index].Zaplaceno THEN
+      NajitPrazdnyIndex := index;
+      EXIT;
+    END_IF;
+  END_FOR;
+END_FUNCTION
+
+FUNCTION ZkusitPridatVozidlo : BOOL
+  VAR
+    nalezenyIndex : INT; (* Comment *)
+  END_VAR
+  
+  nalezenyIndex = NajitPrazdnyIndex();
+  IF NOT nalezenyIndex = vychoziHodnotaInt THEN
+    vozidla[nalezenyIndex].SPZ := prijezdSpz;
+    vozidla[nalezenyIndex].CasPrijezdu := timePLC;
+    vozidla[nalezenyIndex].zaplaceno := FALSE;
+    ZkusitPridatVozidlo := TRUE;
+  ELSE
+    ZkusitPridatVozidlo := FALSE;
+  END_IF;
+END_FUNCTION
+
+FUNCTION ZiskatIndexVozidlaPodleSpz : INT
+  VAR
+    index: INT; (* Comment *)
+  END_VAR
+  VAR_INPUT
+    SPZ: STRING; (* Comment *)
+  END_VAR
+
+  ZiskatIndexVozidlaPodleSpz := vychoziHodnotaInt; // neplatný index
+  FOR index := 0 TO pocetParkovacichMist - 1 DO
+    IF SPZ = vozidla[index].SPZ THEN
+      ZiskatIndexVozidlaPodleSpz := index;
+      EXIT;
+    END_IF;
+  END_FOR;
+END_FUNCTION
+
+FUNCTION SpocitatParkovaciPoplatek : Nic
+  VAR_INPUT
+    indexVozidla: INT; (* Comment *)
+  END_VAR
+  VAR
+    casZaparkovano : INT; (* Comment *)
+    cenaZaparkovani : INT;
+  END_VAR
+
+  casZaparkovano := timePLC - vozidla[indexVozidla].CasPrijezdu;
+  cenaZaparkovani := casZaparkovano * cenaZaSekunduParkovani;
+
+  vozidla[indexVozidla].DobaZaparkovani := casZaparkovano;
+  vozidla[indexVozidla].CastkaNaZaplaceni := cenaZaparkovani;
+END_FUNCTION
+
+FUNCTION ZobrazitUdajePriVyjezdu : Nic
+  VAR_INPUT
+    indexVozidla : INT; (* Comment *)
+  END_VAR
+  dobaStaniText :=  INT_TO_STRING(vozidla[indexVozidla].DobaZaparkovani / 3600) + ' h ' + 
+                    INT_TO_STRING(vozidla[indexVozidla].DobaZaparkovani / 60) + ' min ' + 
+                    INT_TO_STRING(vozidla[indexVozidla].DobaZaparkovani) + ' s';
+  castkaNaZaplaceniText := INT_TO_STRING(vozidla[indexVozidla].CastkaNaZaplaceni) + ' BTC';
+END_FUNCTION
+
+PROGRAM prgMain
+  VAR_INPUT
+  END_VAR
+  VAR_OUTPUT
+  END_VAR
+  VAR
+    indexPodleSPZ : INT;
+  END_VAR
+  VAR_TEMP
+  END_VAR
+
+  IF NOT nastaveno THEN
+    NastavitProgram();
+  END_IF;
+
+
+  CASE stavParkoviste OF
+    0: // IO
+      IF tlacitkoPrijezd THEN
+        IF NOT prijezdSpz = vychoziHodnotaString THEN
+          IF ZkusitPridatVozidlo() THEN
+            stavParkoviste := 1;
+          ELSE
+            stavParkoviste := 7;
+          END_IF;
+        END_IF;
+        tlacitkoPrijezd := FALSE;
+      //END_IF;
+
+      ELSIF tlacitkoVyjezd THEN
+        IF NOT vyjezdSpz = vychoziHodnotaString THEN
+          indexPodleSPZ := ZiskatIndexVozidlaPodleSpz(vyjezdSpz);
+          IF NOT indexPodleSPZ = vychoziHodnotaInt THEN
+            SpocitatParkovaciPoplatek(indexPodleSPZ);
+            ZobrazitUdajePriVyjezdu(indexPodleSPZ);
+            stavParkoviste := 3;
+          ELSE
+            vyjezdSpz := vychoziHodnotaString;
+          END_IF;
+        END_IF;
+        tlacitkoVyjezd := FALSE;
+      END_IF;
+    1: // nastavit závory nahoru
+      zavoraPrijezdSpustena := TRUE;
+      casZpozdeni := timePLC + dobaOtevreniZavory;
+      stavParkoviste := 2;
+      statusText := textPrijezd;
+    2: // počkat na vjetí
+      IF casZpozdeni <= timePLC THEN
+        prijezdSpz := vychoziHodnotaString; // reset
+        zavoraPrijezdSpustena := FALSE;
+        stavParkoviste := 0;
+        statusText := vychoziHodnotaString;
+      END_IF;
+    3: // výzva k zaplacení
+      statusText := textZaplatit;
+      tlacitkoZaplaceno := FALSE; // preventivní reset
+      casZpozdeni := timePLC + timeoutCas;
+      stavParkoviste := 4;
+    4:
+      IF casZpozdeni <= timePLC THEN // nedošlo k zaplacení
+        stavParkoviste := 6;
+        statusText := textZadnaPlatba;
+        casZpozdeni := timePLC + casZmenyTextu;
+      ELSIF tlacitkoZaplaceno THEN // zaplaceno
+        zavoraVyjezdSpustena := TRUE;
+        casZpozdeni := timePLC + dobaOtevreniZavory;
+        statusText := textVyjezd;
+        stavParkoviste := 5;
+        vozidla[indexPodleSPZ].zaplaceno := TRUE;
+      END_IF;
+    5: // zavřít závoru
+      IF casZpozdeni <= timePLC THEN
+        zavoraVyjezdSpustena := FALSE;
+        stavParkoviste := 0;
+        statusText := vychoziHodnotaString;
+        vyjezdSpz := vychoziHodnotaString;
+      END_IF;
+    6:
+      IF casZpozdeni <= timePLC THEN // nezaplaceno text
+        stavParkoviste := 0;
+        statusText := vychoziHodnotaString;
+        vyjezdSpz := vychoziHodnotaString; // reset
+      END_IF;
+    7: // plné parkovistě text
+      statusText := textPlneParkoviste;
+      casZpozdeni := timePLC + casZmenyTextu;
+      stavParkoviste := 8;
+    8: // plné parkovistě text reset
+      IF casZpozdeni <= timePLC THEN
+        statusText := vychoziHodnotaString;
+        stavParkoviste := 0;
+      END_IF;
+  END_CASE;
+  
+END_PROGRAM
+

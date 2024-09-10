@@ -1,0 +1,17 @@
+#srcfile 'C:\USERS\IGN·C\DOCUMENTS\PLC\WINTER_PLC\10_PARKOVACIDUM\10_PARKOVACIDUM.MCF'
+ 
+#srcfile 'C:\USERS\IGN·C\DOCUMENTS\PLC\WINTER_PLC\10_PARKOVACIDUM\10_PARKOVACIDUM.MCF'
+
+; ***** RESOURCE - CPM
+#reg prgMain Main
+#srcline 4 ;    PROGRAM Main WITH FreeWheeling : prgMain ();
+P     0
+ LEA  Main
+ CAL  prgMain_L0
+E     0
+
+
+
+ 
+
+#srcfile ''

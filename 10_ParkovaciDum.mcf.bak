@@ -1,0 +1,5 @@
+CONFIGURATION _10_ParkovaciDum
+  RESOURCE CPM
+    TASK FreeWheeling(Number := 0);
+  END_RESOURCE
+END_CONFIGURATION

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<web version="8.1" propfont="true" foot="© 2007 - 2020 Teco a.s." dwMode="1" MaxUid="3418">
+	<panels></panels>
+	<Grid Enable="1" X="5" Y="5" />
+	<globalset newdim="1" />
+	<group caption="" Uid="3401">
+		<page caption="Index" name="PAGE1.XML" ajax="true" pause="1000" default="true" Uid="3400" ucid="1713878119" width="795" height="575">
+			<object caption="" X="14" Y="32" xoff="6" yoff="7" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="3402">
+				<edit variable="prijezdSpz" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="15" global="false" border="true" width="145" height="22" tabindex="1" />
+			</object>
+			<object caption="" X="72" Y="31" xoff="7" yoff="0" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="3403">
+				<edit variable="vyjezdSpz" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="15" global="false" border="true" width="145" height="22" tabindex="2" />
+			</object>
+			<object caption="" X="6" Y="41" xoff="5" yoff="5" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="3406">
+				<image optcap="" variable="zavoraPrijezdSpustena" type="BOOL" on="ZA180B_1.PNG" off="ZAVORA_2.PNG" />
+			</object>
+			<object caption="" X="63" Y="41" xoff="4" yoff="0" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="3407">
+				<image optcap="" variable="zavoraVyjezdSpustena" type="BOOL" on="ZA180B_1.PNG" off="ZAVORA_2.PNG" />
+			</object>
+			<object caption="" X="76" Y="42" xoff="5" yoff="2" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="3408">
+				<edit variable="castkaNaZaplaceniText" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="10" global="true" border="true" width="100" height="22" tabindex="4" />
+			</object>
+			<object caption="" X="76" Y="45" xoff="5" yoff="3" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="3409">
+				<edit variable="dobaStaniText" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="10" global="true" border="true" width="100" height="22" tabindex="5" />
+			</object>
+			<object caption="" X="29" Y="10" xoff="1" yoff="3" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="3411">
+				<edit variable="statusText" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="50" global="true" border="true" width="460" height="22" tabindex="3" />
+			</object>
+			<object caption="Prijezd SPZ OK" X="17" Y="19" xoff="2" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="3415">
+				<imagebtn variable="tlacitkoPrijezd" value="1" timeout="500" type="BOOL" on="BUTTON_2.PNG" off="BUTTON_1.PNG" />
+			</object>
+			<object caption="Vyjezd SPZ OK" X="75" Y="18" xoff="3" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="3416">
+				<imagebtn variable="tlacitkoVyjezd" value="1" timeout="500" type="BOOL" on="BUTTON_2.PNG" off="BUTTON_1.PNG" />
+			</object>
+			<object caption="Zaplatit" X="76" Y="49" xoff="0" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="3417">
+				<imagebtn variable="tlacitkoZaplaceno" value="1" timeout="500" type="BOOL" on="BUTTON_2.PNG" off="BUTTON_1.PNG" />
+			</object>
+		</page>
+	</group>
+	<images>
+		<img name="ZAVORA_2.PNG" type="PNG" height="250" width="292" longname="ZavoraDolu" />
+		<img name="ZA180B_1.PNG" type="PNG" height="250" width="295" longname="ZavoraNahoru" />
+		<img name="BUTTON_2.PNG" type="PNG" height="100" width="100" longname="button_0_fix" />
+		<img name="BUTTON_1.PNG" type="PNG" height="100" width="100" longname="button_1_fix" />
+	</images>
+	<Languages>
+		<Language Code="5" Editor="1" />
+	</Languages>
+	<Layers active="0" pasteMode="0">
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+	</Layers>
+	<security crypt="1" count="10">
+		<user level="-1" name="0" pass="CF" />
+		<user level="-1" name="1" pass="CE" />
+		<user level="-1" name="2" pass="CD" />
+		<user level="-1" name="3" pass="CC" />
+		<user level="-1" name="4" pass="CB" />
+		<user level="-1" name="5" pass="CA" />
+		<user level="-1" name="6" pass="C9" />
+		<user level="-1" name="7" pass="C8" />
+		<user level="-1" name="8" pass="C7" />
+		<user level="-1" name="9" pass="C6" />
+	</security>
+	<autologin count="10">
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+	</autologin>
+	<tecoapi count="10">
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+	</tecoapi>
+</web>

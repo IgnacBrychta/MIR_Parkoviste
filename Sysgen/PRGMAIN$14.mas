@@ -1,0 +1,1119 @@
+#srcfile 'C:\USERS\IGN�C\DOCUMENTS\PLC\WINTER_PLC\10_PARKOVACIDUM\PRGMAIN.ST'
+
+#defpou NastavitProgram
+  Nic __fc__NastavitProgram
+#reg NastavitProgram  __Instance__NastavitProgram
+
+
+#defpou NajitPrazdnyIndex
+  int __fc__NajitPrazdnyIndex,
+  int index  ; Comment 
+#reg NajitPrazdnyIndex  __Instance__NajitPrazdnyIndex
+
+
+#defpou ZkusitPridatVozidlo
+  bool __fc__ZkusitPridatVozidlo,
+  int nalezenyIndex  ; Comment 
+#reg ZkusitPridatVozidlo  __Instance__ZkusitPridatVozidlo
+
+
+#defpou ZiskatIndexVozidlaPodleSpz
+  int __fc__ZiskatIndexVozidlaPodleSpz,
+  int index,  ; Comment 
+  string[81] SPZ  ; Comment 
+#reg ZiskatIndexVozidlaPodleSpz  __Instance__ZiskatIndexVozidlaPodleSpz
+
+
+#defpou SpocitatParkovaciPoplatek
+  Nic __fc__SpocitatParkovaciPoplatek,
+  int indexVozidla,  ; Comment 
+  int casZaparkovano,  ; Comment 
+  int cenaZaparkovani
+#reg SpocitatParkovaciPoplatek  __Instance__SpocitatParkovaciPoplatek
+
+
+#defpou ZobrazitUdajePriVyjezdu
+  Nic __fc__ZobrazitUdajePriVyjezdu,
+  int indexVozidla  ; Comment 
+#reg ZobrazitUdajePriVyjezdu  __Instance__ZobrazitUdajePriVyjezdu
+
+
+#defpou prgMain
+  int indexPodleSPZ
+
+ 
+#srcfile 'C:\USERS\IGN�C\DOCUMENTS\PLC\WINTER_PLC\10_PARKOVACIDUM\PRGMAIN.ST'
+#pou NastavitProgram
+#srcline 1 ;FUNCTION NastavitProgram : Nic
+P     61
+NastavitProgram_L0:
+ LINK 0
+ NXT
+; Initialize - variables
+ LD  0
+ WRX  usint __fc__NastavitProgram
+; End initialize - variables
+#srcline 3 ;  nastaveno := TRUE;
+ LD   bool -1       ; true
+ WR   nastaveno
+#debug_left bool nastaveno
+#srcline 4 ;END_FUNCTION
+ PRV  
+ LEAX  __fc__NastavitProgram
+ SRC   %X0
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou NajitPrazdnyIndex
+#srcline 6 ;FUNCTION NajitPrazdnyIndex : INT
+
+#struct NajitPrazdnyIndex__temp__
+  int P0__st__
+P     61
+NajitPrazdnyIndex_L0:
+ LINK __SizeOf(NajitPrazdnyIndex__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__NajitPrazdnyIndex
+ WRX  index
+; End initialize - variables
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 10 ;  NajitPrazdnyIndex := vychoziHodnotaInt;
+ LD   int -1
+ WRX  __fc__NajitPrazdnyIndex
+#debug_left int NajitPrazdnyIndex
+#srcline 11 ;  FOR index := 0 TO pocetParkovacichMist - 1 DO
+ LD   int 0
+ WRX  index
+ LD   int 10
+ LD   int 1
+ SUB
+ EXTW
+ WRY  P0__st__
+NajitPrazdnyIndex_L1:
+ LDX  index
+ EXTW 
+ LDY  P0__st__
+ EXTW 
+ GTS  
+ JMD  NajitPrazdnyIndex_L2
+ DBG  
+#srcline 12 ;    IF vozidla[index].Zaplaceno THEN
+ LEA  vozidla
+ LDX  index
+#debug int index
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ ADD  87  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool vozidla[index].Zaplaceno
+ JMC  NajitPrazdnyIndex_L3
+#srcline 13 ;      NajitPrazdnyIndex := index;
+ LDX  index
+#debug int index
+ EXTW 
+ WRX  __fc__NajitPrazdnyIndex
+#debug_left int NajitPrazdnyIndex
+#srcline 14 ;      EXIT;
+ JMP  NajitPrazdnyIndex_L2
+#srcline 15 ;    END_IF;
+NajitPrazdnyIndex_L3:
+#srcline 16 ;  END_FOR;
+ LDX  index
+ LD   1
+ ADD  
+ EXTW 
+ WRX  index
+ JMP  NajitPrazdnyIndex_L1
+NajitPrazdnyIndex_L2:
+ NOP  -1
+#srcline 17 ;END_FUNCTION
+ PRV  
+ LDX  __fc__NajitPrazdnyIndex
+ EXTW 
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou ZkusitPridatVozidlo
+#srcline 19 ;FUNCTION ZkusitPridatVozidlo : BOOL
+
+#struct ZkusitPridatVozidlo__temp__
+  string[82] PS0__st__
+P     61
+ZkusitPridatVozidlo_L0:
+ LINK __SizeOf(ZkusitPridatVozidlo__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__ZkusitPridatVozidlo
+ WRX  nalezenyIndex
+; End initialize - variables
+#srcline 24 ;  nalezenyIndex := NajitPrazdnyIndex();
+ LEA  __Instance__NajitPrazdnyIndex
+ CAL  NajitPrazdnyIndex_L0
+ WRX  nalezenyIndex
+#debug_left int nalezenyIndex
+#srcline 25 ;  IF NOT nalezenyIndex = vychoziHodnotaInt THEN
+ LDX  nalezenyIndex
+#debug int nalezenyIndex
+ EXTW 
+ LD   int -1
+ EQ
+ NEG
+ JMC  ZkusitPridatVozidlo_L1
+#srcline 26 ;    vozidla[nalezenyIndex].SPZ := prijezdSpz;
+ LD   0   ; null string
+ LEA  vozidla
+ LDX  nalezenyIndex
+#debug int nalezenyIndex
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ WRI  
+ LEA  vozidla
+ LDX  nalezenyIndex
+#debug int nalezenyIndex
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ LD   80
+ DST    ; Level 1
+ LEA  prijezdSpz
+#debug string prijezdSpz
+ SCON 
+#debug_left string vozidla[nalezenyIndex].SPZ
+ PDST   ; Level 1
+#srcline 27 ;    vozidla[nalezenyIndex].CasPrijezdu := timePLC;
+ LD   timePLC
+#debug int timePLC
+ EXTW 
+ LEA  vozidla
+ LDX  nalezenyIndex
+#debug int nalezenyIndex
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ ADD  81  ; + offset 
+ WRIW 
+#debug_left int vozidla[nalezenyIndex].CasPrijezdu
+#srcline 28 ;    vozidla[nalezenyIndex].zaplaceno := FALSE;
+ LD   bool 0       ; false
+ LEA  vozidla
+ LDX  nalezenyIndex
+#debug int nalezenyIndex
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ ADD  87  ; + offset 
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool vozidla[nalezenyIndex].zaplaceno
+#srcline 29 ;    ZkusitPridatVozidlo := TRUE;
+ LD   bool -1       ; true
+ WRX  __fc__ZkusitPridatVozidlo
+#debug_left bool ZkusitPridatVozidlo
+#srcline 30 ;  ELSE
+ JMP  ZkusitPridatVozidlo_L2
+ZkusitPridatVozidlo_L1:
+#srcline 31 ;    ZkusitPridatVozidlo := FALSE;
+ LD   bool 0       ; false
+ WRX  __fc__ZkusitPridatVozidlo
+#debug_left bool ZkusitPridatVozidlo
+#srcline 32 ;  END_IF;
+ZkusitPridatVozidlo_L2:
+#srcline 33 ;END_FUNCTION
+ PRV  
+ LDX  __fc__ZkusitPridatVozidlo
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou ZiskatIndexVozidlaPodleSpz
+#srcline 35 ;FUNCTION ZiskatIndexVozidlaPodleSpz : INT
+
+#struct ZiskatIndexVozidlaPodleSpz__temp__
+  int P0__st__
+P     61
+ZiskatIndexVozidlaPodleSpz_L0:
+ LINK __SizeOf(ZiskatIndexVozidlaPodleSpz__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__ZiskatIndexVozidlaPodleSpz
+ WRX  index
+; End initialize - variables
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 43 ;  ZiskatIndexVozidlaPodleSpz := vychoziHodnotaInt; // neplatný index
+ LD   int -1
+ WRX  __fc__ZiskatIndexVozidlaPodleSpz
+#debug_left int ZiskatIndexVozidlaPodleSpz
+#srcline 44 ;  FOR index := 0 TO pocetParkovacichMist - 1 DO
+ LD   int 0
+ WRX  index
+ LD   int 10
+ LD   int 1
+ SUB
+ EXTW
+ WRY  P0__st__
+ZiskatIndexVozidlaPodleSpz_L1:
+ LDX  index
+ EXTW 
+ LDY  P0__st__
+ EXTW 
+ GTS  
+ JMD  ZiskatIndexVozidlaPodleSpz_L2
+ DBG  
+#srcline 45 ;    IF SPZ = vozidla[index].SPZ THEN
+ LEAX SPZ
+#debug string SPZ
+ LEA  vozidla
+ LDX  index
+#debug int index
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+#debug string vozidla[index].SPZ
+ SCMP 
+ EQ   0
+ JMC  ZiskatIndexVozidlaPodleSpz_L3
+#srcline 46 ;      ZiskatIndexVozidlaPodleSpz := index;
+ LDX  index
+#debug int index
+ EXTW 
+ WRX  __fc__ZiskatIndexVozidlaPodleSpz
+#debug_left int ZiskatIndexVozidlaPodleSpz
+#srcline 47 ;      EXIT;
+ JMP  ZiskatIndexVozidlaPodleSpz_L2
+#srcline 48 ;    END_IF;
+ZiskatIndexVozidlaPodleSpz_L3:
+#srcline 49 ;  END_FOR;
+ LDX  index
+ LD   1
+ ADD  
+ EXTW 
+ WRX  index
+ JMP  ZiskatIndexVozidlaPodleSpz_L1
+ZiskatIndexVozidlaPodleSpz_L2:
+ NOP  -1
+#srcline 50 ;END_FUNCTION
+ PRV  
+ LDX  __fc__ZiskatIndexVozidlaPodleSpz
+ EXTW 
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou SpocitatParkovaciPoplatek
+#srcline 52 ;FUNCTION SpocitatParkovaciPoplatek : Nic
+P     61
+SpocitatParkovaciPoplatek_L0:
+ LINK 0
+ NXT
+; Initialize - variables
+ LD  0
+ WRX  usint __fc__SpocitatParkovaciPoplatek
+ WRX  casZaparkovano
+ WRX  cenaZaparkovani
+; End initialize - variables
+#srcline 61 ;  casZaparkovano := timePLC - vozidla[indexVozidla].CasPrijezdu;
+ LD   timePLC
+#debug int timePLC
+ EXTW 
+ LEA  vozidla
+ LDX  indexVozidla
+#debug int indexVozidla
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ ADD  81  ; + offset 
+ LDIW 
+#debug int vozidla[indexVozidla].CasPrijezdu
+ EXTW 
+ SUB
+ EXTW
+ WRX  casZaparkovano
+#debug_left int casZaparkovano
+#srcline 62 ;  cenaZaparkovani := casZaparkovano * cenaZaSekunduParkovani;
+ LDX  casZaparkovano
+#debug int casZaparkovano
+ EXTW 
+ LD   cenaZaSekunduParkovani
+#debug int cenaZaSekunduParkovani
+ EXTW
+ MULS
+ EXTW
+ WRX  cenaZaparkovani
+#debug_left int cenaZaparkovani
+#srcline 64 ;  vozidla[indexVozidla].DobaZaparkovani := casZaparkovano;
+ LDX  casZaparkovano
+#debug int casZaparkovano
+ EXTW 
+ LEA  vozidla
+ LDX  indexVozidla
+#debug int indexVozidla
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ ADD  83  ; + offset 
+ WRIW 
+#debug_left int vozidla[indexVozidla].DobaZaparkovani
+#srcline 65 ;  vozidla[indexVozidla].CastkaNaZaplaceni := cenaZaparkovani;
+ LDX  cenaZaparkovani
+#debug int cenaZaparkovani
+ EXTW 
+ LEA  vozidla
+ LDX  indexVozidla
+#debug int indexVozidla
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ ADD  85  ; + offset 
+ WRIW 
+#debug_left int vozidla[indexVozidla].CastkaNaZaplaceni
+#srcline 66 ;END_FUNCTION
+ PRV  
+ LEAX  __fc__SpocitatParkovaciPoplatek
+ SRC   %X0
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou ZobrazitUdajePriVyjezdu
+#srcline 68 ;FUNCTION ZobrazitUdajePriVyjezdu : Nic
+
+#struct ZobrazitUdajePriVyjezdu__temp__
+  string[82] PS0__st__,
+  string[82] PSC__st__
+#data byte _str_ZobrazitUdajePriVyjezdu_0 = 
+  ' ','h',' ',0
+#data byte _str_ZobrazitUdajePriVyjezdu_1 = 
+  ' ','m','i','n',' ',0
+#data byte _str_ZobrazitUdajePriVyjezdu_2 = 
+  ' ','s',0
+#data byte _str_ZobrazitUdajePriVyjezdu_3 = 
+  ' ','B','T','C',0
+P     61
+ZobrazitUdajePriVyjezdu_L0:
+ LINK __SizeOf(ZobrazitUdajePriVyjezdu__temp__)
+ NXT
+; Initialize - variables
+ LD  0
+ WRX  usint __fc__ZobrazitUdajePriVyjezdu
+; End initialize - variables
+#srcline 72 ;  dobaStaniText :=  INT_TO_STRING(vozidla[indexVozidla].DobaZaparkovani / 3600) + ' h ' + 
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LEA  vozidla
+ LDX  indexVozidla
+#debug int indexVozidla
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ ADD  83  ; + offset 
+ LDIW 
+#debug int vozidla[indexVozidla].DobaZaparkovani
+ EXTW 
+ LD   int 3600
+ DIVS
+ EXTW
+ SCNV $0B30;  IEC_INT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ LEA  _str_ZobrazitUdajePriVyjezdu_0
+ SCON 
+#srcline 73 ;                    INT_TO_STRING(vozidla[indexVozidla].DobaZaparkovani / 60) + ' min ' + 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LEA  vozidla
+ LDX  indexVozidla
+#debug int indexVozidla
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ ADD  83  ; + offset 
+ LDIW 
+#debug int vozidla[indexVozidla].DobaZaparkovani
+ EXTW 
+ LD   int 60
+ DIVS
+ EXTW
+ SCNV $0B30;  IEC_INT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ LEA  _str_ZobrazitUdajePriVyjezdu_1
+ SCON 
+#srcline 74 ;                    INT_TO_STRING(vozidla[indexVozidla].DobaZaparkovani) + ' s';
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LEA  vozidla
+ LDX  indexVozidla
+#debug int indexVozidla
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ ADD  83  ; + offset 
+ LDIW 
+#debug int vozidla[indexVozidla].DobaZaparkovani
+ EXTW 
+ SCNV $0B30;  IEC_INT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ LEA  _str_ZobrazitUdajePriVyjezdu_2
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEA  dobaStaniText
+ WRI  
+ LEA  dobaStaniText
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string dobaStaniText
+ PDST   ; Level 1
+#srcline 75 ;  castkaNaZaplaceniText := INT_TO_STRING(vozidla[indexVozidla].CastkaNaZaplaceni) + ' BTC';
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LEA  vozidla
+ LDX  indexVozidla
+#debug int indexVozidla
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ ADD  85  ; + offset 
+ LDIW 
+#debug int vozidla[indexVozidla].CastkaNaZaplaceni
+ EXTW 
+ SCNV $0B30;  IEC_INT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ LEA  _str_ZobrazitUdajePriVyjezdu_3
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEA  castkaNaZaplaceniText
+ WRI  
+ LEA  castkaNaZaplaceniText
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string castkaNaZaplaceniText
+ PDST   ; Level 1
+#srcline 76 ;END_FUNCTION
+ PRV  
+ LEAX  __fc__ZobrazitUdajePriVyjezdu
+ SRC   %X0
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou prgMain
+#srcline 78 ;PROGRAM prgMain
+
+#struct prgMain__temp__
+  dint P0__st__,
+  string[82] PS0__st__
+P     61
+prgMain_L0:
+ LINK __SizeOf(prgMain__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 89 ;  IF NOT nastaveno THEN
+ LD   nastaveno
+#debug bool nastaveno
+ NEG
+ JMC  prgMain_L1
+#srcline 90 ;    NastavitProgram();
+ LEA  __Instance__NastavitProgram
+ CAL  NastavitProgram_L0
+#srcline 91 ;  END_IF;
+prgMain_L1:
+#srcline 94 ;  CASE stavParkoviste OF
+ LD   stavParkoviste
+#debug int stavParkoviste
+ EXTW 
+ WRY  P0__st__
+ LD   0
+ LDY  P0__st__
+ EQ  
+ JMC  prgMain_L4
+#srcline 95 ;    0: // IO
+#srcline 96 ;      IF tlacitkoPrijezd THEN
+ LD   tlacitkoPrijezd
+#debug bool tlacitkoPrijezd
+ JMC  prgMain_L5
+#srcline 97 ;        IF NOT prijezdSpz = vychoziHodnotaString THEN
+ LEA  prijezdSpz
+#debug string prijezdSpz
+ LEA  vychoziHodnotaString
+ SCMP 
+ EQ   0
+ NEG
+ JMC  prgMain_L7
+#srcline 98 ;          IF ZkusitPridatVozidlo() THEN
+ LEA  __Instance__ZkusitPridatVozidlo
+ CAL  ZkusitPridatVozidlo_L0
+ JMC  prgMain_L9
+#srcline 99 ;            stavParkoviste := 1;
+ LD   int 1
+ WR   stavParkoviste
+#debug_left int stavParkoviste
+#srcline 100 ;          ELSE
+ JMP  prgMain_L10
+prgMain_L9:
+#srcline 101 ;            stavParkoviste := 7;
+ LD   int 7
+ WR   stavParkoviste
+#debug_left int stavParkoviste
+#srcline 102 ;          END_IF;
+prgMain_L10:
+#srcline 103 ;        END_IF;
+prgMain_L7:
+#srcline 104 ;        tlacitkoPrijezd := FALSE;
+ LD   bool 0       ; false
+ WR   tlacitkoPrijezd
+#debug_left bool tlacitkoPrijezd
+#srcline 105 ;      //END_IF;
+#srcline 107 ;      ELSIF tlacitkoVyjezd THEN
+ JMP  prgMain_L6
+prgMain_L5:
+ LD   tlacitkoVyjezd
+#debug bool tlacitkoVyjezd
+ JMC  prgMain_L11
+#srcline 108 ;        IF NOT vyjezdSpz = vychoziHodnotaString THEN
+ LEA  vyjezdSpz
+#debug string vyjezdSpz
+ LEA  vychoziHodnotaString
+ SCMP 
+ EQ   0
+ NEG
+ JMC  prgMain_L12
+#srcline 109 ;          indexPodleSPZ := ZiskatIndexVozidlaPodleSpz(vyjezdSpz);
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__ZiskatIndexVozidlaPodleSpz~SPZ
+ WRI 
+ LEA  __Instance__ZiskatIndexVozidlaPodleSpz~SPZ
+ LD   80
+ DST    ; Level 1
+ LEA  vyjezdSpz
+#debug string vyjezdSpz
+ SCON 
+#debug_left string __Instance__ZiskatIndexVozidlaPodleSpz~SPZ
+ PDST   ; Level 1
+ PRV
+ LEA  __Instance__ZiskatIndexVozidlaPodleSpz
+ CAL  ZiskatIndexVozidlaPodleSpz_L0
+ WRX  indexPodleSPZ
+#debug_left int indexPodleSPZ
+#srcline 110 ;          IF NOT indexPodleSPZ = vychoziHodnotaInt THEN
+ LDX  indexPodleSPZ
+#debug int indexPodleSPZ
+ EXTW 
+ LD   int -1
+ EQ
+ NEG
+ JMC  prgMain_L14
+#srcline 111 ;            SpocitatParkovaciPoplatek(indexPodleSPZ);
+ NXT
+ LDX  indexPodleSPZ
+#debug int indexPodleSPZ
+ EXTW 
+ WR   __Instance__SpocitatParkovaciPoplatek~indexVozidla
+#debug_left int __Instance__SpocitatParkovaciPoplatek~indexVozidla
+ PRV
+ LEA  __Instance__SpocitatParkovaciPoplatek
+ CAL  SpocitatParkovaciPoplatek_L0
+#srcline 112 ;            ZobrazitUdajePriVyjezdu(indexPodleSPZ);
+ NXT
+ LDX  indexPodleSPZ
+#debug int indexPodleSPZ
+ EXTW 
+ WR   __Instance__ZobrazitUdajePriVyjezdu~indexVozidla
+#debug_left int __Instance__ZobrazitUdajePriVyjezdu~indexVozidla
+ PRV
+ LEA  __Instance__ZobrazitUdajePriVyjezdu
+ CAL  ZobrazitUdajePriVyjezdu_L0
+#srcline 113 ;            stavParkoviste := 3;
+ LD   int 3
+ WR   stavParkoviste
+#debug_left int stavParkoviste
+#srcline 114 ;          ELSE
+ JMP  prgMain_L15
+prgMain_L14:
+#srcline 115 ;            vyjezdSpz := vychoziHodnotaString;
+ LD   0   ; null string
+ LEA  vyjezdSpz
+ WRI  
+ LEA  vyjezdSpz
+ LD   80
+ DST    ; Level 1
+ LEA  vychoziHodnotaString
+ SCON 
+#debug_left string vyjezdSpz
+ PDST   ; Level 1
+#srcline 116 ;          END_IF;
+prgMain_L15:
+#srcline 117 ;        END_IF;
+prgMain_L12:
+#srcline 118 ;        tlacitkoVyjezd := FALSE;
+ LD   bool 0       ; false
+ WR   tlacitkoVyjezd
+#debug_left bool tlacitkoVyjezd
+#srcline 119 ;      END_IF;
+ JMP  prgMain_L6
+prgMain_L11:
+prgMain_L6:
+ JMP  prgMain_L3
+prgMain_L4:
+ LD   1
+ LDY  P0__st__
+ EQ  
+ JMC  prgMain_L16
+#srcline 120 ;    1: // nastavit závory nahoru
+#srcline 121 ;      zavoraPrijezdSpustena := TRUE;
+ LD   bool -1       ; true
+ WR   zavoraPrijezdSpustena
+#debug_left bool zavoraPrijezdSpustena
+#srcline 122 ;      casZpozdeni := timePLC + dobaOtevreniZavory;
+ LD   timePLC
+#debug int timePLC
+ EXTW 
+ LD   int 5
+ ADD
+ EXTW
+ WR   casZpozdeni
+#debug_left int casZpozdeni
+#srcline 123 ;      stavParkoviste := 2;
+ LD   int 2
+ WR   stavParkoviste
+#debug_left int stavParkoviste
+#srcline 124 ;      statusText := textPrijezd;
+ LD   0   ; null string
+ LEA  statusText
+ WRI  
+ LEA  statusText
+ LD   80
+ DST    ; Level 1
+ LEA  textPrijezd
+ SCON 
+#debug_left string statusText
+ PDST   ; Level 1
+ JMP  prgMain_L3
+prgMain_L16:
+ LD   2
+ LDY  P0__st__
+ EQ  
+ JMC  prgMain_L17
+#srcline 125 ;    2: // počkat na vjetí
+#srcline 126 ;      IF casZpozdeni <= timePLC THEN
+ LD   casZpozdeni
+#debug int casZpozdeni
+ EXTW 
+ LD   timePLC
+#debug int timePLC
+ EXTW 
+ GTS
+ NEG
+ JMC  prgMain_L18
+#srcline 127 ;        prijezdSpz := vychoziHodnotaString; // reset
+ LD   0   ; null string
+ LEA  prijezdSpz
+ WRI  
+ LEA  prijezdSpz
+ LD   80
+ DST    ; Level 1
+ LEA  vychoziHodnotaString
+ SCON 
+#debug_left string prijezdSpz
+ PDST   ; Level 1
+#srcline 128 ;        zavoraPrijezdSpustena := FALSE;
+ LD   bool 0       ; false
+ WR   zavoraPrijezdSpustena
+#debug_left bool zavoraPrijezdSpustena
+#srcline 129 ;        stavParkoviste := 0;
+ LD   int 0
+ WR   stavParkoviste
+#debug_left int stavParkoviste
+#srcline 130 ;        statusText := vychoziHodnotaString;
+ LD   0   ; null string
+ LEA  statusText
+ WRI  
+ LEA  statusText
+ LD   80
+ DST    ; Level 1
+ LEA  vychoziHodnotaString
+ SCON 
+#debug_left string statusText
+ PDST   ; Level 1
+#srcline 131 ;      END_IF;
+prgMain_L18:
+ JMP  prgMain_L3
+prgMain_L17:
+ LD   3
+ LDY  P0__st__
+ EQ  
+ JMC  prgMain_L20
+#srcline 132 ;    3: // výzva k zaplacení
+#srcline 133 ;      statusText := textZaplatit;
+ LD   0   ; null string
+ LEA  statusText
+ WRI  
+ LEA  statusText
+ LD   80
+ DST    ; Level 1
+ LEA  textZaplatit
+ SCON 
+#debug_left string statusText
+ PDST   ; Level 1
+#srcline 134 ;      tlacitkoZaplaceno := FALSE; // preventivní reset
+ LD   bool 0       ; false
+ WR   tlacitkoZaplaceno
+#debug_left bool tlacitkoZaplaceno
+#srcline 135 ;      casZpozdeni := timePLC + timeoutCas;
+ LD   timePLC
+#debug int timePLC
+ EXTW 
+ LD   int 5
+ ADD
+ EXTW
+ WR   casZpozdeni
+#debug_left int casZpozdeni
+#srcline 136 ;      stavParkoviste := 4;
+ LD   int 4
+ WR   stavParkoviste
+#debug_left int stavParkoviste
+ JMP  prgMain_L3
+prgMain_L20:
+ LD   4
+ LDY  P0__st__
+ EQ  
+ JMC  prgMain_L21
+#srcline 137 ;    4:
+#srcline 138 ;      IF casZpozdeni <= timePLC THEN // nedošlo k zaplacení
+ LD   casZpozdeni
+#debug int casZpozdeni
+ EXTW 
+ LD   timePLC
+#debug int timePLC
+ EXTW 
+ GTS
+ NEG
+ JMC  prgMain_L22
+#srcline 139 ;        stavParkoviste := 6;
+ LD   int 6
+ WR   stavParkoviste
+#debug_left int stavParkoviste
+#srcline 140 ;        statusText := textZadnaPlatba;
+ LD   0   ; null string
+ LEA  statusText
+ WRI  
+ LEA  statusText
+ LD   80
+ DST    ; Level 1
+ LEA  textZadnaPlatba
+ SCON 
+#debug_left string statusText
+ PDST   ; Level 1
+#srcline 141 ;        casZpozdeni := timePLC + casZmenyTextu;
+ LD   timePLC
+#debug int timePLC
+ EXTW 
+ LD   int 3
+ ADD
+ EXTW
+ WR   casZpozdeni
+#debug_left int casZpozdeni
+#srcline 142 ;      ELSIF tlacitkoZaplaceno THEN // zaplaceno
+ JMP  prgMain_L23
+prgMain_L22:
+ LD   tlacitkoZaplaceno
+#debug bool tlacitkoZaplaceno
+ JMC  prgMain_L24
+#srcline 143 ;        zavoraVyjezdSpustena := TRUE;
+ LD   bool -1       ; true
+ WR   zavoraVyjezdSpustena
+#debug_left bool zavoraVyjezdSpustena
+#srcline 144 ;        casZpozdeni := timePLC + dobaOtevreniZavory;
+ LD   timePLC
+#debug int timePLC
+ EXTW 
+ LD   int 5
+ ADD
+ EXTW
+ WR   casZpozdeni
+#debug_left int casZpozdeni
+#srcline 145 ;        statusText := textVyjezd;
+ LD   0   ; null string
+ LEA  statusText
+ WRI  
+ LEA  statusText
+ LD   80
+ DST    ; Level 1
+ LEA  textVyjezd
+ SCON 
+#debug_left string statusText
+ PDST   ; Level 1
+#srcline 146 ;        stavParkoviste := 5;
+ LD   int 5
+ WR   stavParkoviste
+#debug_left int stavParkoviste
+#srcline 147 ;        vozidla[indexPodleSPZ].zaplaceno := TRUE;
+ LD   bool -1       ; true
+ LEA  vozidla
+ LDX  indexPodleSPZ
+#debug int indexPodleSPZ
+ EXTW 
+ RCHK 9   ; Range Check
+ MUL  88   ; SizeOf(...)
+ ADD     ; + offset 
+ ADD  87  ; + offset 
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool vozidla[indexPodleSPZ].zaplaceno
+#srcline 148 ;      END_IF;
+ JMP  prgMain_L23
+prgMain_L24:
+prgMain_L23:
+ JMP  prgMain_L3
+prgMain_L21:
+ LD   5
+ LDY  P0__st__
+ EQ  
+ JMC  prgMain_L25
+#srcline 149 ;    5: // zavřít závoru
+#srcline 150 ;      IF casZpozdeni <= timePLC THEN
+ LD   casZpozdeni
+#debug int casZpozdeni
+ EXTW 
+ LD   timePLC
+#debug int timePLC
+ EXTW 
+ GTS
+ NEG
+ JMC  prgMain_L26
+#srcline 151 ;        zavoraVyjezdSpustena := FALSE;
+ LD   bool 0       ; false
+ WR   zavoraVyjezdSpustena
+#debug_left bool zavoraVyjezdSpustena
+#srcline 152 ;        stavParkoviste := 0;
+ LD   int 0
+ WR   stavParkoviste
+#debug_left int stavParkoviste
+#srcline 153 ;        statusText := vychoziHodnotaString;
+ LD   0   ; null string
+ LEA  statusText
+ WRI  
+ LEA  statusText
+ LD   80
+ DST    ; Level 1
+ LEA  vychoziHodnotaString
+ SCON 
+#debug_left string statusText
+ PDST   ; Level 1
+#srcline 154 ;        vyjezdSpz := vychoziHodnotaString;
+ LD   0   ; null string
+ LEA  vyjezdSpz
+ WRI  
+ LEA  vyjezdSpz
+ LD   80
+ DST    ; Level 1
+ LEA  vychoziHodnotaString
+ SCON 
+#debug_left string vyjezdSpz
+ PDST   ; Level 1
+#srcline 155 ;      END_IF;
+prgMain_L26:
+ JMP  prgMain_L3
+prgMain_L25:
+ LD   6
+ LDY  P0__st__
+ EQ  
+ JMC  prgMain_L28
+#srcline 156 ;    6:
+#srcline 157 ;      IF casZpozdeni <= timePLC THEN // nezaplaceno text
+ LD   casZpozdeni
+#debug int casZpozdeni
+ EXTW 
+ LD   timePLC
+#debug int timePLC
+ EXTW 
+ GTS
+ NEG
+ JMC  prgMain_L29
+#srcline 158 ;        stavParkoviste := 0;
+ LD   int 0
+ WR   stavParkoviste
+#debug_left int stavParkoviste
+#srcline 159 ;        statusText := vychoziHodnotaString;
+ LD   0   ; null string
+ LEA  statusText
+ WRI  
+ LEA  statusText
+ LD   80
+ DST    ; Level 1
+ LEA  vychoziHodnotaString
+ SCON 
+#debug_left string statusText
+ PDST   ; Level 1
+#srcline 160 ;        vyjezdSpz := vychoziHodnotaString; // reset
+ LD   0   ; null string
+ LEA  vyjezdSpz
+ WRI  
+ LEA  vyjezdSpz
+ LD   80
+ DST    ; Level 1
+ LEA  vychoziHodnotaString
+ SCON 
+#debug_left string vyjezdSpz
+ PDST   ; Level 1
+#srcline 161 ;      END_IF;
+prgMain_L29:
+ JMP  prgMain_L3
+prgMain_L28:
+ LD   7
+ LDY  P0__st__
+ EQ  
+ JMC  prgMain_L31
+#srcline 162 ;    7: // plné parkovistě text
+#srcline 163 ;      statusText := textPlneParkoviste;
+ LD   0   ; null string
+ LEA  statusText
+ WRI  
+ LEA  statusText
+ LD   80
+ DST    ; Level 1
+ LEA  textPlneParkoviste
+ SCON 
+#debug_left string statusText
+ PDST   ; Level 1
+#srcline 164 ;      casZpozdeni := timePLC + casZmenyTextu;
+ LD   timePLC
+#debug int timePLC
+ EXTW 
+ LD   int 3
+ ADD
+ EXTW
+ WR   casZpozdeni
+#debug_left int casZpozdeni
+#srcline 165 ;      stavParkoviste := 8;
+ LD   int 8
+ WR   stavParkoviste
+#debug_left int stavParkoviste
+ JMP  prgMain_L3
+prgMain_L31:
+ LD   8
+ LDY  P0__st__
+ EQ  
+ JMC  prgMain_L32
+#srcline 166 ;    8: // plné parkovistě text reset
+#srcline 167 ;      IF casZpozdeni <= timePLC THEN
+ LD   casZpozdeni
+#debug int casZpozdeni
+ EXTW 
+ LD   timePLC
+#debug int timePLC
+ EXTW 
+ GTS
+ NEG
+ JMC  prgMain_L33
+#srcline 168 ;        statusText := vychoziHodnotaString;
+ LD   0   ; null string
+ LEA  statusText
+ WRI  
+ LEA  statusText
+ LD   80
+ DST    ; Level 1
+ LEA  vychoziHodnotaString
+ SCON 
+#debug_left string statusText
+ PDST   ; Level 1
+#srcline 169 ;        stavParkoviste := 0;
+ LD   int 0
+ WR   stavParkoviste
+#debug_left int stavParkoviste
+#srcline 170 ;        prijezdSpz := vychoziHodnotaString;
+ LD   0   ; null string
+ LEA  prijezdSpz
+ WRI  
+ LEA  prijezdSpz
+ LD   80
+ DST    ; Level 1
+ LEA  vychoziHodnotaString
+ SCON 
+#debug_left string prijezdSpz
+ PDST   ; Level 1
+#srcline 171 ;      END_IF;
+prgMain_L33:
+ JMP  prgMain_L3
+prgMain_L32:
+prgMain_L3:
+#srcline 173 ;  
+#srcline 174 ;END_PROGRAM
+ ULNK
+RET
+E     61
+#endpou 
+
+
+
+ 
+
+#srcfile ''

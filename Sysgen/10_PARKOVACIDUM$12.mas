@@ -1,0 +1,197 @@
+#srcfile 'C:\USERS\IGN·C\DOCUMENTS\PLC\WINTER_PLC\10_PARKOVACIDUM\10_PARKOVACIDUM.ST'
+
+; Global variables
+#def  pocetParkovacichMist 10
+#data byte __Init____vychoziHodnotaString = 
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00;
+
+#def vychoziHodnotaString string __Init____vychoziHodnotaString
+#def  vychoziHodnotaInt -1
+#def  dobaOtevreniZavory 5
+#data byte __Init____textZaplatit = 
+  'Z','a','p','l','a','t','t','e',' ','t','l','a','c','i','t','k','e','m',$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00;
+
+#def textZaplatit string __Init____textZaplatit
+#data byte __Init____textZadnaPlatba = 
+  'N','e','z','a','p','l','a','t','i','l','i',' ','j','s','t','e',$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00;
+
+#def textZadnaPlatba string __Init____textZadnaPlatba
+#data byte __Init____textVyjezd = 
+  'S','t','a','s','t','o','u',' ','c','e','s','t','u',$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00;
+
+#def textVyjezd string __Init____textVyjezd
+#data byte __Init____textPrijezd = 
+  'V','j','e','d','t','e',' ','a',' ','z','a','p','a','r','k','u','j','t','e',$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00;
+
+#def textPrijezd string __Init____textPrijezd
+#data byte __Init____textPlneParkoviste = 
+  'P','a','r','k','o','v','i','s','t','e',' ','j','e',' ','p','l','n','e',$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+  $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00;
+
+#def textPlneParkoviste string __Init____textPlneParkoviste
+#def  timeoutCas 5
+#def  casZmenyTextu 3
+
+; Global types
+#struct  Vozidlo
+  string[81] SPZ,  ; Comment 
+  int CasPrijezdu,  ; Comment 
+  int DobaZaparkovani,
+  int CastkaNaZaplaceni,
+  bool Zaplaceno
+
+; Global types
+#struct  Nic
+  bool _
+
+; Global variables
+#def  timePLC int %S16
+#reg  int casZpozdeni
+#reg  Vozidlo vozidla[10]
+#reg  bool nastaveno
+#reg  int stavParkoviste
+#reg  bool zavoraPrijezdSpustena
+#reg  bool zavoraVyjezdSpustena
+#reg  string prijezdSpz[81]
+#reg  string vyjezdSpz[81]
+#reg  bool tlacitkoPrijezd
+#reg  bool tlacitkoVyjezd
+#reg  string castkaNaZaplaceniText[81]
+#reg  bool tlacitkoZaplaceno
+#reg  string dobaStaniText[81]
+#reg  string statusText[81]
+#reg  int aktualniPocetVozidel
+#reg  int cenaZaSekunduParkovani
+#table byte __Init____vozidla = 
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+      0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1;
+#table byte __Init____prijezdSpz = 
+    $00;
+#table byte __Init____vyjezdSpz = 
+    $00;
+#table byte __Init____castkaNaZaplaceniText = 
+    $00;
+#table byte __Init____dobaStaniText = 
+    $00;
+#table byte __Init____statusText = 
+    $00;
+ 
+#srcfile 'C:\USERS\IGN·C\DOCUMENTS\PLC\WINTER_PLC\10_PARKOVACIDUM\10_PARKOVACIDUM.ST'
+
+P     58
+; Initialize non retain global variables 
+ LD   int -1
+ WR   casZpozdeni
+ LD   0
+ SRC  byte __Init____vozidla
+ LD   0
+ LD   880
+ MOV  byte vozidla[0]
+ LD   bool 0   ; false
+ WR   nastaveno
+ LD   int 0
+ WR   stavParkoviste
+ LD   bool 0   ; false
+ WR   zavoraPrijezdSpustena
+ LD   bool 0   ; false
+ WR   zavoraVyjezdSpustena
+ LD   0
+ SRC  byte __Init____prijezdSpz
+ LD   0
+ LD   81
+ MOV  byte prijezdSpz
+ LD   0
+ SRC  byte __Init____vyjezdSpz
+ LD   0
+ LD   81
+ MOV  byte vyjezdSpz
+ LD   bool 0   ; false
+ WR   tlacitkoPrijezd
+ LD   bool 0   ; false
+ WR   tlacitkoVyjezd
+ LD   0
+ SRC  byte __Init____castkaNaZaplaceniText
+ LD   0
+ LD   81
+ MOV  byte castkaNaZaplaceniText
+ LD   bool 0   ; false
+ WR   tlacitkoZaplaceno
+ LD   0
+ SRC  byte __Init____dobaStaniText
+ LD   0
+ LD   81
+ MOV  byte dobaStaniText
+ LD   0
+ SRC  byte __Init____statusText
+ LD   0
+ LD   81
+ MOV  byte statusText
+ LD   int 0
+ WR   aktualniPocetVozidel
+ LD   int 2
+ WR   cenaZaSekunduParkovani
+E     58
+
+
+ 
+
+#srcfile ''
